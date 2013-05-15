@@ -1,0 +1,62 @@
+#!/bin/bash                                                                                           
+
+PROFILEOUTPUTFILE="profiling_outputfile"
+
+on_die()
+{
+    echo "Stopping Ganesha execution."
+    killall -s TERM /usr/bin/gpfs.ganesha.nfsd
+    echo "Printing profiling data to ${PROFILEOUTPUTFILE}."
+    gprof -b /usr/bin/gpfs.ganesha.nfsd > $PROFILEOUTPUTFILE
+    echo "Shutting down Ganesha with init script."
+    /etc/init.d/nfs-ganesha.gpfs stop
+    echo
+    echo "Profiling completed successfully!"
+    echo
+    exit 0
+}
+
+trap 'on_die' TERM
+trap 'on_die' INT
+trap 'on_die' QUIT
+
+if [ ! -e /etc/init.d/nfs-ganesha.gpfs ]; then
+    echo "Error: Init script for Ganesha GPFS doesn't exist. Install Ganesha."
+    exit 1
+fi
+
+#/etc/init.d/nfs-ganesha.gpfs restart
+#killall -s TERM /usr/bin/gpfs.ganesha.nfsd
+#/etc/init.d/nfs-ganesha.gpfs restart
+
+/etc/init.d/nfs-ganesha.gpfs stop
+/sbin/modprobe open-by-handle
+sleep .5
+/usr/bin/gpfs.ganesha.nfsd -f /etc/ganesha/gpfs.ganesha.nfsd.conf -N NIV_EVENT -L /var/log/gpfs.ganesha.nfsd.log &
+sleep 1
+killall -s TERM /usr/bin/gpfs.ganesha.nfsd
+sleep .5
+/usr/bin/gpfs.ganesha.nfsd -f /etc/ganesha/gpfs.ganesha.nfsd.conf -N NIV_EVENT -L /var/log/gpfs.ganesha.nfsd.log &
+
+if [ ! $? ]; then
+    echo "Error: Ganesha did not start properly!"
+    exit $?
+fi
+
+if [ ! -e ./gmon.out ]; then
+    echo "Error: Ganesha was not compiled with --with-profiling. File "
+    echo "\"gmon.out\" was not produced during execution of Ganesha."
+    exit 1;
+fi
+
+echo ""
+echo "--------------------------------------------------------------------------"
+echo "Ganesha is running while profiling. The profiling output file will be"
+echo "printed to ${PROFILEOUTPUTFILE}."
+echo "Once you are done executing operations, press ctl-c to quit."
+echo "--------------------------------------------------------------------------"
+echo ""
+
+while [ true ]; do
+    sleep 100
+done

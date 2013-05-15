@@ -1,0 +1,15 @@
+Tests are run through Makefile. Each directory relates to one rule in the Makefile.
+
+There are four environment required by the tests:
+
+SERVER - hostname or ip of the nfs server
+
+EXPORTDIR - The directory that is being shared (exported) by nfs
+
+TMPDIR - Where output files from tests should go. These will eventually be parsed and turned into junit xml files.
+
+XMLDEST - Where the junit xml files should be placed.
+
+
+An example run on my local virtual machine:
+SERVER=192.168.122.101 EXPORTDIR=/mnt/temp XMLDEST=/opt/xml TMPDIR=/tmp make

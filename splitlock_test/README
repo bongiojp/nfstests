@@ -1,0 +1,7 @@
+Various tests to make sure NFSv4 locking is working properly.
+
+* shared and exclusive locks
+* multiple files locked by a single client
+* multiple opens and closes before any locking operations.
+* TEST with a lock owner (a separate process already has a lock) before any lock requests.
+* Unlocking bytes in the middle of a big lock, effectively splitting it in two ... hopefully.

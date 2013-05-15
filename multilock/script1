@@ -1,0 +1,19 @@
+# simple script to test list command
+{
+  # wait for 2 children to start in any order
+  EXPECT c1 * HELLO OK c1
+  EXPECT c2 * HELLO OK c2
+}
+OK c1 OPEN 1 rw temp.out
+OK c2 OPEN 1 rw temp.out
+GRANTED c1 LOCK 1 write 10 20
+GRANTED c1 LOCK 1 read 100 10
+c2 $L LIST 1 0 0
+{
+  # Wait for two locks in any order
+  EXPECT c2 $L LIST CONFLICT 1 * write 10 20
+  EXPECT c2 $L LIST CONFLICT 1 * read 100 10
+}
+# List finished with a DENIED if any locks present
+EXPECT c2 $L LIST DENIED 1 0 0
+QUIT

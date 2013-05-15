@@ -1,0 +1,1 @@
+Make sure that the Ganesha server using GPFS FSAL is not giving locks to NFS clients when a conflicting lock is already locally held (on the serveR) on the filesystem Ganesha is exporting.

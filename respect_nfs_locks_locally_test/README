@@ -1,0 +1,1 @@
+Make sure that locks granted by the Ganesha server on a GPFS FSAL export are also respected through GPFS.

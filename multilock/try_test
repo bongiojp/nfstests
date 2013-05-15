@@ -1,0 +1,11 @@
+# This script requests a lock from one process and tries to test it from another process
+CHILDREN c1 c2
+OK c1 OPEN 1 rw create try_test.file
+OK c2 OPEN 1 rw try_test.file
+GRANTED c1 LOCK 1 read 102030 123
+c2 $ TEST 1 write 101020 1234
+EXPECT c2 $ TEST CONFLICT 1 * read 102030 123
+GRANTED c1 UNLOCK 1 102030 123
+OK c1 CLOSE 1
+OK c2 CLOSE 1
+QUIT

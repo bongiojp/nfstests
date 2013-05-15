@@ -1,0 +1,23 @@
+In order for this script to work the following list must be satisified:
+
+1. On the machine that runs this script in /etc/sudoers, the user than runs tests must have the following rules:
+   root ALL=(ALL:ALL) ALL
+   hudson ALL=(ALL:ALL) ALL
+
+   The rule can be dissected as follows:
+        hudson    ALL=                              (ALL      :         ALL)              ALL
+   user hudson on any host is granted rights to use any username with any group to access any program.
+
+2. The "hudson" username and group must exist, the "root" username and group must exist, the "otheruser" username and group must exist.
+
+3. The test script MUST be run as a non root user. The use of sudo to gain root privileges will also create environment variables that save information about who the user used to be. In these cases, permissions won't act exactly like they should for a root user.
+
+4. All of the users (hudson, otheruser, and root) must have passwordless sudo access. reason: sudo -u \#1000 will execute a command as 1000, but sudo -g \#1000 will ADD the 1000 group to the current group privileges and execute. We want to _replace_ the group though. In order to do this we sudo su to the user we want, then change the uid and never change the gid explicitly.
+
+Notes:
+
+For octals like 0001 ( ---------x ) to be tested properly, there must be a binary executable. A script is read and interpreted, but a binary doesn't need to be readable.
+
+
+
+Another important note: If an I/O error or permissions denied error occurs ... FIRST THING check the mode bits, contents of the file, uid, gid, and then also check the mode bits for ALL preceding directories!

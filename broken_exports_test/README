@@ -1,0 +1,7 @@
+Bug that we witnessed:
+
+exportfs = /ibm/fs0
+client tries to mount /ibm/fs0/asdf but this directory doesn't exist.
+Ganesha changes root_fhandle of /ibm/fs0
+future mounts of /ibm/fs0 or any existing subdirectories no longer works.
+

@@ -1,0 +1,4 @@
+example of use: perl ./fdstress.pl /mnt/ganesha_mnt1.2:/mnt/ganesha_mnt2.2:/mnt/ganesha_sword_.2:/mnt/ganesha_export3.2 30
+
+will start 30 threads for each mount point to generate and delete file descriptors.
+

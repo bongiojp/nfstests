@@ -1,0 +1,18 @@
+CHILDREN c1 c2
+
+OK c1 OPEN 1 rw create temp.out
+OK c2 OPEN 1 rw temp.out
+GRANTED c1 LOCK 1 write 0 10
+
+# wait for conflicting lock
+c2 $G LOCKW 1 write 0 10
+sleep 2
+# now release c1's lock so c2 can get lock
+c1 $R UNLOCK 1 0 10
+{
+  EXPECT c1 $R UNLOCK GRANTED 1 unlock 0 10
+  EXPECT c2 $G LOCKW  GRANTED 1 write  0 10
+}
+sleep 1
+GRANTED c2 UNLOCK 1 0 10
+QUIT
